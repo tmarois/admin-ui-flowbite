@@ -2,6 +2,7 @@ import { createResolver } from '@nuxt/kit'
 const { resolve } = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
+    ssr: false,
     runtimeConfig: {
         public: {
             BASE_URL: process.env.BASE_URL,
