@@ -1,4 +1,8 @@
 {
+  "name": "adminui",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
   "private": true,
   "scripts": {
     "build": "nuxt build",
