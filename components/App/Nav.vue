@@ -44,20 +44,20 @@
 		</div>
 </div>
 	<div class="flex md:order-2">
-			<button type="button" class="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+			<button type="button" class="hidden flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
 				<span class="sr-only">Open user menu</span>
 				<div class="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-blue-700 rounded-full dark:bg-gray-600">
-						<span class="font-medium text-white">TM</span>
+						<span class="font-medium text-white">??</span>
 				</div>
 			</button>
 
 
 			<!-- Dropdown menu -->
 			<div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
-				<div class="px-4 py-3">
+				<!-- <div class="px-4 py-3">
 					<span class="block text-sm text-gray-900 dark:text-white">Timothy Marois</span>
 					<span class="block text-sm font-medium text-gray-500 truncate dark:text-gray-400">timothymarois@gmail.com</span>
-				</div>
+				</div> -->
 				<ul class="py-2" aria-labelledby="user-menu-button">
 					<!-- <li>
 						<NuxtLink href="/account/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">My Account</NuxtLink>
