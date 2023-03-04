@@ -29,7 +29,7 @@
             <div :class="`bg-white grow ${(removePadding || removeBodyPadding) ? '' : 'p-4'}`">
                 <slot />
             </div>
-            <div v-if="slots.footer" :class="`${removePadding ? '' : 'p-4'} border-t border-gray-300 bg-white`">
+            <div v-if="slots.footer" :class="`${removePadding || removeFooterPadding ? '' : 'p-4'} border-t border-gray-300 bg-white`">
                 <slot name="footer" />
             </div>
         </div>
@@ -58,6 +58,10 @@ const props = defineProps({
         default: false
     },
     removeBodyPadding: {
+        type: Boolean,
+        default: false
+    },
+    removeFooterPadding: {
         type: Boolean,
         default: false
     },
