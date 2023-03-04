@@ -1,5 +1,9 @@
 <template>
-    <div class="bg-red-50 border-b border-red-200 px-4 pt-4 pb-3 -m-4 mb-4 -mx-6 cursor-pointer" @click="expand = !expand">
+    <div 
+        class="bg-red-50 px-4 pt-4 pb-3 cursor-pointer" 
+        :class="{'-m-4 mb-4 -mx-6 border-b border-red-200' : props.placement==='drawer'}"
+        @click="expand = !expand"
+    >
         <div class="flex items-center">
             <div class="ml-3 basis-full">
                 <div class="flex my-1 text-sm font-medium text-red-800">
@@ -30,6 +34,10 @@ const props = defineProps({
     errors: {
         type: Object,
         default: () => {}
+    },
+    placement: {
+        type: String,
+        default: 'drawer'
     }
 });
 
