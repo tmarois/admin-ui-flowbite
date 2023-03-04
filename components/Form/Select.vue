@@ -94,6 +94,9 @@
                         </slot>
                     </li>
                 </template>
+                <li v-else class="flex items-center justify-between rounded p-4 font-medium">
+                    {{ nodata }}
+                </li>
             </ul>
         </div>
     </div>
@@ -183,6 +186,10 @@ const props = defineProps({
         type: Boolean,
         required: false,
         default: false
+    },
+    nodata: {
+        type: String,
+        default: 'No Results Found'
     },
 });
 
