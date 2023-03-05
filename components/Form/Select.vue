@@ -367,9 +367,9 @@ const selectItem = (item) => {
         }
     }
 
-    emit('change', returnValue); 
-    emit('update:modelValue', returnValue);
-    emit('input', returnValue);
+    emit('change', returnValue.value); 
+    emit('update:modelValue', returnValue.value);
+    emit('input', returnValue.value);
 }
 
 const checkValueOptions = (value) => {
