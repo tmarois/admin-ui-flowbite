@@ -86,7 +86,7 @@
                             :disabled="item.disabled"
                             class="ml-2"
                         />
-                        <slot name="option" :option="item">
+                        <slot name="option" :item="item">
                             <div
                                 class="font-normal p-2"
                                 v-html="item[props.itemLabel]"
