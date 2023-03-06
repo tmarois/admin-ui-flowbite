@@ -418,10 +418,9 @@ const cycleOptions = (key) => {
 }
 
 const clearField = () => {
-    localsearch.value = null;
-    selected.value = [];
-    emit('change', null); 
-    emit('update:modelValue', returnValue);
+    updateValue(null)
+    emit('change', returnValue.value); 
+    emit('update:modelValue', returnValue.value);
 };
 
 </script>
