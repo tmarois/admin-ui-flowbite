@@ -333,7 +333,7 @@ const getItemsByValue = (values) => {
 
 onMounted(() => {
     if (props.modelValue || props.modelValue === false) {
-        checkValueOptions(props.modelValue);
+        updateValue(props.modelValue);
     }
     document.addEventListener('click', close, false);
 })
@@ -372,16 +372,6 @@ const selectItem = (item) => {
     emit('input', returnValue.value);
 }
 
-const checkValueOptions = (value) => {
-    updateValue(value)
-};
-
-// need to figure this out
-// its causing inifnite updates
-watch(() => props.modelValue, (v) => {
-    checkValueOptions(v)
-})
-
 // watch(() => searchableOptions, (v) => {
 //     if(props.searchable && !v.length) menu.value = false;
 // })
@@ -395,8 +385,12 @@ watch(() => menu.value, (v) => {
     }    
 })
 
+watch(() => props.modelValue, (v) => {
+    updateValue(v)
+})
+
 watch(() => props.options, (v) => {
-    checkValueOptions(selected.value)
+    updateValue(selected.value)
 }) 
 
 const menuToggle = (source) => {
