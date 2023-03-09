@@ -2,7 +2,7 @@
 	<div class="relative flex items-center">
         <div 
         v-if="props.switch && props.falseLabel"
-			class="mr-2 text-sm" 
+			class="pr-3 text-sm" 
 		>
 			<FormLabel 
 				@click.native="switchState('before')"
@@ -38,7 +38,7 @@
 			<div :class="`${props.inset ? 'w-12' : 'w-10'} ${props.inset ? 'h-6' : 'h-4'} ${isChecked ? `bg-blue-200` : 'bg-gray-100'} rounded-full shadow-inner`" />
 			<div :class="`absolute w-6 h-6 bg-white border-2 ${isChecked ? `border-blue-200 translate-x-full` : 'translate-x-0'} rounded-full ${props.inset ? 'left-0 top-0' : '-left-1 -top-1'} transition`" /> 
 		</div>
-		<div v-if="props.label" class="ml-2 text-sm" @click.native="switchState('after')">
+		<div v-if="props.label" class="pl-3 text-sm" @click.native="switchState('after')">
 			<FormLabel 
                 :id="props.switch ? null : id" 
                 :required="required"
