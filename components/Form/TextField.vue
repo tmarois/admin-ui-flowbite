@@ -6,6 +6,7 @@
             :title="props.label"
             :required="props.required"
             :error="props.errors"
+            :tooltip="props.tooltip"
         />
         <div class="flex" :class="{'mt-1': props.label}">
             <div v-if="slots?.prepend" class="inline-flex items-center px-3 text-sm text-gray-800 bg-gray-100 border border-r-0 border-gray-200 rounded-l-md">
@@ -155,6 +156,10 @@ const props = defineProps({
     selectAll: {
         type: Boolean,
         default: false
+    },
+    tooltip: {
+        type: String,
+        default: null
     },
 });
 

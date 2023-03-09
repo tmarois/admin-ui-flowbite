@@ -6,6 +6,7 @@
             :title="props.label"
             :required="props.required"
             :error="props.errors"
+            :tooltip="props.tooltip"
         />
         <div class="relative w-full" :class="{'mt-1': props.label}">
             <div ref="root">
@@ -27,7 +28,7 @@
                     >{{ props.placeholder }}</span>
 
                     <span
-                        v-else-if="!searchable && selectPlaceholder" 
+                        v-else-if="!props.searchable && selectPlaceholder" 
                         class="truncate pl-2 font-medium"
                         :class="{
                             'text-gray-500 cursor-not-allowed': props.disabled,
@@ -35,6 +36,28 @@
                         }"
                         @click="menuToggle('label')"
                     >{{ selectPlaceholder }}</span>
+
+                    <input
+                        v-else
+                        v-model="localsearch"
+                        ref="dsearchb"
+                        @keyup="searchLocal($event, localsearch)"
+                        :disabled="props.disabled"
+                        @click="menuToggle('input')"
+                        type="text"
+                        :autocomplete="`new-search-${id}`"
+                        :id="`search-${id}`"
+                        :name="`n[${id}]`"
+                        :placeholder="selectPlaceholder"
+                        class="w-full bg-transparent font-medium pl-2 text-sm placeholder-gray-500 my-auto truncate border-0 focus:outline-none focus:ring-0"
+                        :class="{
+                            'cursor-pointer': menu === false,
+                            'text-gray-500 cursor-not-allowed': props.disabled,
+                            'text-indigo-800': !props.disabled,
+                            'placeholder-indigo-800': selected.length > 0 || selected[itemValue] || selected[itemValue] === false,
+                        }"
+                        @keydown="inputFilter"
+                    />
 
                     <span
                         v-if="clearable && (localsearch || selected.length || selected[props.itemValue] || selected[props.itemValue] === false)"
@@ -68,7 +91,19 @@
                 :style="`${props.maxHeight ? `max-height: ${props.maxHeight}px` : ''}`"
                 :id="`dropdown-${id}`"
             >
-                <template v-if="computedOptions.length && !props.grouped">
+                <li v-if="props.loading && !computedOptions.length" class="flex items-center rounded m-4 font-medium">
+                    Searching...
+                </li>
+                <li 
+                    v-else-if="props.searchable && !searchableOptions.length && !localsearch" 
+                    class="flex items-center justify-between rounded m-4 font-medium"
+                >
+                    {{ props.searchText }}
+                </li>
+                <li v-else-if="!searchableOptions.length" class="flex items-center justify-between rounded p-4 font-medium">
+                    {{ props.nodata }}
+                </li>
+                <template v-else-if="computedOptions.length && !props.grouped">
                     <li
                         v-for="(item, i) of searchableOptions"
                         :key="i"
@@ -94,9 +129,6 @@
                         </slot>
                     </li>
                 </template>
-                <li v-else class="flex items-center justify-between rounded p-4 font-medium">
-                    {{ nodata }}
-                </li>
             </ul>
         </div>
     </div>
@@ -191,6 +223,14 @@ const props = defineProps({
         type: String,
         default: 'No Results Found'
     },
+    searchText: {
+        type: String,
+        default: 'Start typing to search for results'
+    },
+    tooltip: {
+        type: String,
+        default: null
+    },
 });
 
 const root = ref(null);
@@ -235,6 +275,13 @@ const dropdownClasses = computed(() => {
     return c;
 });
 
+const inputFilter = (e) => {
+    const filters = '\<\>\/\\'
+    if (filters.includes(e.key)) {
+        e.preventDefault()
+    }
+};
+
 const isChecked = (item) => {
     if(selected.value.some((obj) => obj[props.itemValue] === item[props.itemValue])) return true;
     return false;
@@ -260,11 +307,11 @@ const computedOptions = computed(() => {
 });
 
 const searchableOptions = computed(() => {
-    if (localsearch && props.searchable && isSearching && !props.useExternal) {
+    if (localsearch.value && props.searchable && isSearching && !props.useExternal) {
         const filteredOptions = JSON.parse(JSON.stringify(computedOptions.value)).filter((option) => {
-            let o = String(option[props.itemLabel]).toLowerCase().match(localsearch.toLowerCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+            let o = String(option[props.itemLabel]).toLowerCase().match(localsearch.value.toLowerCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
             if (o) {
-                option[props.itemLabel] = String(option[props.itemLabel]).replace((new RegExp(localsearch, "ig")), (matchedText) => {
+                option[props.itemLabel] = String(option[props.itemLabel]).replace((new RegExp(localsearch.value, "ig")), (matchedText) => {
                     return (`<u>${matchedText}</u>`);
                 });
                 return o;
@@ -292,6 +339,9 @@ const selectPlaceholder = computed(() => {
     } 
     else if (!props.multiple && (selected.value[props.itemValue] || selected.value[props.itemValue] === false)) {
         return selected.value[props.itemLabel];
+    }
+    else if (props.placeholder) {
+        return props.placeholder;
     }
     return null;
 });
@@ -346,6 +396,15 @@ const equalsSearch = (item) => {
     return searchableOptions?.[cycleIndex.value]?.[props.itemValue] === item;
 }
 
+const searchLocal = (event, value) => {
+    // lets ignore these events since they are not searches
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Enter') return false;
+    if (localsearch.value && localsearch.value.length) localsearch.value = localsearch.value.replace(/[\<\>//\\]/gi, '')
+    if (searchableOptions.value.length) menu.value = true;
+    isSearching.value = true;
+    // if (this.groupSelectable) this.showAllGroups();
+};
+
 const selectItem = (item) => {
     if (props.loading) return;
     // remove possible underline from search select
@@ -372,9 +431,9 @@ const selectItem = (item) => {
     emit('input', returnValue.value);
 }
 
-// watch(() => searchableOptions, (v) => {
-//     if(props.searchable && !v.length) menu.value = false;
-// })
+watch(() => searchableOptions, (v) => {
+    if(props.searchable && !v.length) menu.value = false;
+})
 
 watch(() => menu.value, (v) => {
     if (v === true) nextTick(() => viewportIni.value = viewport(`#dropdown-${id}`));
@@ -400,9 +459,8 @@ const menuToggle = (source) => {
     // if (this.textField) return;
     if (props.searchable && !localsearch.value && !computedOptions.length) return menu.value = false;
     if (!props.disabled) {
-        // if (props.searchable && source !== 'arrow') menu.value = true;
-        // else menu.value = !menu.value;
-        menu.value = !menu.value;
+        if (props.searchable && source !== 'arrow') menu.value = true;
+        else menu.value = !menu.value;
     }
 };
 
