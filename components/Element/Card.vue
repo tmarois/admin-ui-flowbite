@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col w-full">
-        <div v-if="props.detachedHeader && (props.title || slots.header || slots.actions)" :class="`flex ${props.removePadding ? '' : 'p-2'}`">
+        <div v-if="props.detachedHeader && (props.title || slots.header || slots.actions)" :class="`flex items-center ${props.removePadding ? '' : 'p-2'}`">
             <div class="grow">
                 <div v-if="!slots.header">
                     <h1 class="font-medium">{{ props.title }}</h1>
@@ -8,14 +8,14 @@
                 </div>
                 <slot v-else name="header" />
             </div>
-            <div v-if="slots.actions">
+            <div v-if="slots.actions" class="flex items-center">
                 <slot name="actions" />
             </div>
         </div>
         <div class="flex flex-col w-full" :class="{ 'rounded shadow border border-gray-200' : !props.removeStyle}">
             <div 
                 v-if="!props.detachedHeader && (props.title || slots.header || slots.actions)" 
-                :class="`flex ${props.removePadding ? '' : 'p-4'} ${!props.removeStyle ? 'bg-white' : ''} border-b border-gray-200`"
+                :class="`flex items-center ${props.removePadding ? '' : 'p-4'} ${!props.removeStyle ? 'bg-white' : ''} border-b border-gray-200`"
             >
                 <div class="grow">
                     <div v-if="!slots.header">
@@ -24,7 +24,7 @@
                     </div>
                     <slot v-else name="header" />
                 </div>
-                <div v-if="slots.actions">
+                <div v-if="slots.actions" class="flex items-center">
                     <slot name="actions" />
                 </div>
             </div>
