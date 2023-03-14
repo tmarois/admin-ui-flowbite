@@ -25,7 +25,7 @@
 						<div id="trackingNavMenu" class="z-10 hidden font-normal bg-gray-800 divide-y divide-gray-600 rounded shadow w-48">
 								<ul class="py-2 text-sm text-white" aria-labelledby="trackingNavMenu">
 									<li><NuxtLink to="/tracking/time" class="block px-4 py-2 hover:bg-gray-600 dark:hover:bg-gray-600 dark:hover:text-white">Team Hours</NuxtLink></li>
-									<li><NuxtLink to="/tracking/contractors" class="block px-4 py-2 hover:bg-gray-600 dark:hover:bg-gray-600 dark:hover:text-white">Contactor Invices</NuxtLink></li>
+									<li><NuxtLink to="/tracking/contractors" class="block px-4 py-2 hover:bg-gray-600 dark:hover:bg-gray-600 dark:hover:text-white">Contactor Invoices</NuxtLink></li>
 									<li><NuxtLink to="/tracking/receivables" class="block px-4 py-2 hover:bg-gray-600 dark:hover:bg-gray-600 dark:hover:text-white">Client Receivables</NuxtLink></li>
 								</ul>
 						</div>
