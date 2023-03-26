@@ -1,6 +1,6 @@
 <template>
-    <div class="flex  justify-between text-sm">
-        <div class="flex flex-row items-center">
+    <div class="flex justify-between text-sm">
+        <div v-if="!props.hideStats && !props.loadMore" class="flex flex-row items-center">
             <select
                 name="currentPerPage"
                 class="flex w-18 py-2 pl-2 pr-2 text-sm font-medium text-gray-500 bg-white border-gray-200 rounded cursor-pointer hover:bg-blue-100 hover:border-blue-900 hover:text-blue-900 focus:outline-none focus:border-blue-900 focus:ring-0"
@@ -16,19 +16,46 @@
                 </option>
             </select>
             <label for="perPage" class="mt-0 ml-4 text-left text-gray-500">
-                <template v-if="totalCount">Showing {{ fromItem }} to {{ toItem }} of {{ totalCount }} results</template>
+                <template v-if="totalCount">Showing {{ fromItem }} to {{ toItem }} of {{ totalCount }} {{ itemName }}</template>
                 <template v-else-if="props.loading">Loading...</template>
             </label>
         </div>
-        <div class="relative flex order-1 space-x-2">
+        <div v-if="props.loadMore" class="relative flex flex-col justify-center items-center w-full text-center">
+            <div v-if="!props.hideStats" class="text-center mb-2">
+                <template v-if="totalCount">Showing {{ toItem }} of {{ totalCount }} {{ itemName }}</template>
+            </div>
+            <div v-if="nextPrevButtons" class="flex justify-center space-x-2">
+                <ElementButton 
+                    outlined
+                    @click="prevDisabled ? '' : goToPage(props.page - 1)"
+                    :disabled="prevDisabled"
+                >Previous</ElementButton>
+                <ElementButton 
+                    outlined
+                    @click="nextDisabled ? '' : goToPage(props.page + 1)"
+                    :disabled="nextDisabled"
+                >Next</ElementButton>
+            </div>
+            <ElementButton 
+                v-else
+                outlined
+                @click="nextDisabled ? '' : goToPage(props.page + 1)"
+                :disabled="props.loading || nextDisabled"
+                :loading="props.loading"
+            >{{ loadMoreButton }}</ElementButton>
+        </div>
+        <div v-else class="relative flex order-1 space-x-2">
             <div>
                 <ElementButton 
                     ghost
-                    circle
+                    :circle="!nextPrevButtons"
                     @click="prevDisabled ? '' : goToPage(props.page - 1)"
                     :disabled="prevDisabled"
                 >
-                    <template v-slot:icon>
+                    <template v-if="nextPrevButtons" v-slot:default>
+                        <span>Previous</span>
+                    </template>
+                    <template v-if="!nextPrevButtons" v-slot:icon>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                     </template>
                 </ElementButton>
@@ -44,17 +71,22 @@
                     :max="totalPages"
                     classes="text-center"
                     style="width:74px"
+                    v-if="!noInput"
                 />
+                <span v-else>{{ props.page }}</span>
                 <span class="text-gray-500" v-if="totalCount">of {{ totalPages }}</span>
             </div>
             <div>
                 <ElementButton 
                     ghost
-                    circle
+                    :circle="!nextPrevButtons"
                     @click="nextDisabled ? '' : goToPage(props.page + 1)"
                     :disabled="nextDisabled"
                 >
-                    <template v-slot:icon>
+                    <template v-if="nextPrevButtons" v-slot:default>
+                        <span>Next</span>
+                    </template>
+                    <template v-if="!nextPrevButtons" v-slot:icon>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                     </template>
                 </ElementButton>
@@ -70,6 +102,22 @@ const props = defineProps({
         type: Number,
         default: 1
     },
+    nextPrevButtons: {
+        type: Boolean,
+        default: false
+    },
+    hideStats: {
+        type: Boolean,
+        default: false
+    },
+    noInput: {
+        type: Boolean,
+        default: false
+    },
+    loadMore: {
+        type: Boolean,
+        default: false
+    },
     perPage: {
         type: Number,
         default: 15
@@ -80,6 +128,10 @@ const props = defineProps({
             return [15, 30, 50, 100]
         }
     },
+    currentCount: {
+        type: Number,
+        default: 0
+    },
     totalCount: {
         type: Number,
         default: 0
@@ -87,6 +139,14 @@ const props = defineProps({
     loading: {
         type: Boolean,
         default: false
+    },
+    loadMoreButton: {
+        type: String,
+        default: 'Load More'
+    },
+    itemName: {
+        type: String,
+        default: 'results'
     }
 });
 
@@ -105,8 +165,14 @@ const fromItem = computed(() => {
 });
 
 const toItem = computed(() => {
-    if (props.page === totalPages.value) return props.totalCount;
-    else return (props.page) * props.perPage;
+    if (props.page === totalPages.value) {
+        return props.totalCount;
+    }
+    else {
+        let itemCount = (props.page) * props.perPage
+        if (props.currentCount && itemCount > props.currentCount) return props.currentCount;
+        return itemCount;
+    }
 });
 
 const nextDisabled = computed(() => {
