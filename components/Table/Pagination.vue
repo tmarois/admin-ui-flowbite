@@ -41,6 +41,7 @@
                     @focusin="$event.target.select()"
                     @blur="changePage"
                     @change="changePage"
+                    :max="totalPages"
                     classes="text-center"
                     style="width:74px"
                 />
