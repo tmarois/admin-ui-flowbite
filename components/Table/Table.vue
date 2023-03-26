@@ -54,7 +54,9 @@
         <tbody 
             v-if="props.rows && props.rows.length" 
             ref="tablebody"
-            class="divide-y divide-gray-200" :style="props.fixedHeader ? `height: calc(100% - 36px); overflow-y: auto; display: block;` : ''"
+            class="divide-y divide-gray-200" 
+            :class="{'table-scrollbar' : props.fixedHeader}"
+            :style="props.fixedHeader ? `height: calc(100% - 36px); overflow-y: auto; display: block;` : ''"
         >
             <tr 
                 v-for="(row, i) in props.rows"
@@ -97,7 +99,7 @@
                     :style="`${h.minWidth ? `min-width: ${h.minWidth};` : ''} ${h.width ? `width: ${h.width};` : ''}`"
                 >
                     <slot :name="`column.${h.field}`" v-bind:column="row" v-bind:index="i">
-                        <span v-if="getValue(row, h.field) !== null && getValue(row, h.field) !== ''">
+                        <span v-if="getValue(row, h.field) !== null && getValue(row, h.field) !== '' && getValue(row, h.field)">
                             <span v-if="typeof h.formatValue === 'function'">{{ h.formatValue(getValue(row, h.field)) }}</span>
                             <span v-else>{{ getValue(row, h.field) }}</span>
                         </span>
@@ -116,6 +118,24 @@
         </tbody>
     </table>
 </template>
+
+
+<style scoped>
+.table-scrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+.table-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 4px;
+    border: 1px solid #fff;
+}
+.table-scrollbar::-webkit-scrollbar-track {
+  position: absolute;
+  right: -3rem;
+  top: -50rem;
+  background: transparent;
+}
+</style>
 
 <script setup>
 const emit = defineEmits(['sort','click-row','selection']);
