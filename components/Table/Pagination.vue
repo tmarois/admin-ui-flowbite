@@ -70,7 +70,7 @@
                     @change="changePage"
                     :max="totalPages"
                     classes="text-center"
-                    style="width:74px"
+                    style="width:55px"
                     v-if="!noInput"
                 />
                 <span v-else>{{ props.page }}</span>
