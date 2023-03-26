@@ -186,13 +186,18 @@ const validateValue = (value) => {
 
 const input = (e) => {
     internalValue.value = validateValue(e.target.value);
+    e.target.value = internalValue.value;
 };
 
 const keyup = (e) => {
+    internalValue.value = validateValue(e.target.value);
+    e.target.value = internalValue.value;
     emit('keyup', e);
 };
 
 const keydown = (e) => {
+    internalValue.value = validateValue(e.target.value);
+    e.target.value = internalValue.value;
     emit('keydown', e);
 };
 
@@ -204,9 +209,8 @@ const focusin = (e) => {
 };
 
 const focusout = (e) => {
-    if(props.type === 'number') {
-        internalValue.value = validateValue(e.target.value);
-    }
+    internalValue.value = validateValue(e.target.value);
+    e.target.value = internalValue.value;
     emit('focusout', e);
 };
 
@@ -216,6 +220,8 @@ const clearField = () => {
 };
 
 const blur = (e) => {
+    internalValue.value = validateValue(e.target.value);
+    e.target.value = internalValue.value;
     emit('blur',e)
 };
 
@@ -243,8 +249,7 @@ const internalValue = computed({
         return validateValue((props.modelValue!==null) ? props.modelValue : props.value)
     },
     set: (v) => {
-        // emit('input', validateValue(v));
-        emit('update:modelValue', validateValue(v));
+        emit('update:modelValue', (v));
     }
 });
 </script>
