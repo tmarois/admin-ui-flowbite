@@ -26,7 +26,6 @@
                         class="truncate pl-2 font-medium"
                         @click="menuToggle('label')"
                     >{{ props.placeholder }}</span>
-
                     <span
                         v-else-if="!props.searchable && selectPlaceholder" 
                         class="truncate pl-2 font-medium"
@@ -36,7 +35,6 @@
                         }"
                         @click="menuToggle('label')"
                     >{{ selectPlaceholder }}</span>
-
                     <input
                         v-else
                         v-model="localsearch"
@@ -58,7 +56,6 @@
                         }"
                         @keydown="inputFilter"
                     />
-
                     <span
                         v-if="clearable && (localsearch || selected.length || selected[props.itemValue] || selected[props.itemValue] === false)"
                         class="cursor-pointer absolute right-6 p-2 flex items-center"
@@ -66,23 +63,20 @@
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
                     </span>
-
                     <span 
                         v-if="loading"
                         class="px-2 h-full flex items-center ml-auto"
                     >
                         <ElementLoader size="5" />
                     </span>
-
                     <span
                         v-else
-                        @click="menuToggle('arrow')"
+                        @click.prevent="menuToggle('arrow')"
                         class="px-2 h-full flex items-center ml-auto"
                     >
                         <svg v-if="menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.832 6.29 12.77a.75.75 0 11-1.08-1.04l4.25-4.5a.75.75 0 011.08 0l4.25 4.5a.75.75 0 01-.02 1.06z" clip-rule="evenodd" /></svg>
                         <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" /></svg>
                     </span>
-
                 </button>
             </div>
             <ul
@@ -487,12 +481,9 @@ const clearField = () => {
 .truncate {
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.focused {
+}.focused {
     scroll-margin: 8px;
 }
-
 .focused::before {
     content: "";
     transition: .3s cubic-bezier(.25, .8, .5, 1);

@@ -2,7 +2,7 @@
     <label 
         :for="props.id"
         :class="labelClasses"
-        class="flex items-center"
+        class="flex items-center select-none"
     >
         <span v-if="slots?.icon" class="mr-1">
             <slot name="icon" />
