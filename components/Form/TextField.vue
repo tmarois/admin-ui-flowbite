@@ -20,7 +20,7 @@
                     ref="inputTag"
                     :is="tag"
                     :id="id"
-                    :type="props.type"
+                    :type="inputType"
                     :name="`${props.name}-${id}`"
                     :placeholder="props.placeholder"
                     :readonly="props.readonly"
@@ -165,6 +165,8 @@ const props = defineProps({
 
 const tag = (props.type==='area') ? 'textarea' : 'input';
 
+const inputType = (props.type==='number') ? 'text' : props.type;
+
 const emit = defineEmits(['keyup','keydown','focusin','focusout','blur', 'cleared','update:modelValue','input']);
 
 const id = uniqueId();
@@ -174,6 +176,7 @@ const inputTag = ref(null)
 const validateValue = (value) => {
     if (value === null || value === undefined || value === '') return null;
     if (props.type === 'number') {
+        value = value.toString().replace(/\D/g, '');
         value = Number(value)
         if (props.max && value > props.max) value = props.max;
         if (props.min && value < props.min) value = props.min;
