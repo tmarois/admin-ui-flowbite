@@ -185,19 +185,17 @@ const validateValue = (value) => {
 };
 
 const input = (e) => {
-    internalValue.value = validateValue(e.target.value);
-    e.target.value = internalValue.value;
+    // internalValue.value = validateValue(e.target.value);
+    // e.target.value = internalValue.value;
 };
 
 const keyup = (e) => {
-    internalValue.value = validateValue(e.target.value);
-    e.target.value = internalValue.value;
+    e.target.value = validateValue(e.target.value);
+    internalValue.value = (e.target.value);
     emit('keyup', e);
 };
 
 const keydown = (e) => {
-    internalValue.value = validateValue(e.target.value);
-    e.target.value = internalValue.value;
     emit('keydown', e);
 };
 
@@ -209,8 +207,8 @@ const focusin = (e) => {
 };
 
 const focusout = (e) => {
-    internalValue.value = validateValue(e.target.value);
-    e.target.value = internalValue.value;
+    // internalValue.value = validateValue(e.target.value);
+    // e.target.value = internalValue.value;
     emit('focusout', e);
 };
 
