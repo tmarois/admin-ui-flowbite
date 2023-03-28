@@ -44,10 +44,11 @@
 		</div>
 </div>
 	<div class="flex md:order-2">
-			<button type="button" class="hidden flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+			
+			<button v-if="user?.name" type="button" class=" flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
 				<span class="sr-only">Open user menu</span>
 				<div class="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-blue-700 rounded-full dark:bg-gray-600">
-						<span class="font-medium text-white">??</span>
+					<span class="font-medium text-white">{{ user.name[0] }}</span>
 				</div>
 			</button>
 
@@ -93,6 +94,7 @@
 <script setup>
 import { initDropdowns } from 'flowbite'
 const { logout } = useAuth()
+const user = useUser()
 onMounted(() => {
     initDropdowns();
 });
