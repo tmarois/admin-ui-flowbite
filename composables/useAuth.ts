@@ -1,14 +1,5 @@
 import { useAuthStore } from '../stores/auth'
 
-type User = {
-	name: string;
-	email?: string;
-};
-
-export const useUser = () => {
-	return useState<User>("user", () => undefined);
-};
-
 export const useAuth = () => {
 	const router = useRouter();
 	const user = useUser();
@@ -78,15 +69,4 @@ export const useAuth = () => {
 		resetPassword,
 		refresh,
 	};
-};
-
-export const fetchCurrentUser = async () => {
-	try {
-		return await $ofetch<User>("/api/user", {
-			redirectIfNotAuthenticated: true,
-		});
-	} catch (error) {
-		if ([401, 419].includes(error?.response?.status)) return null;
-		throw error;
-	}
 };

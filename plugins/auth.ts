@@ -1,4 +1,4 @@
-import { useUser, fetchCurrentUser } from "../composables/useAuth";
+import { useUser, fetchCurrentUser } from "../composables/useUser";
 
 export default defineNuxtPlugin(async () => {
 	const user = useUser();
