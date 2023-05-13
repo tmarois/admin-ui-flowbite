@@ -1,6 +1,7 @@
 <template>
     <div class="page">
         <div ref="pagebody" 
+            id="pagebody"
             class="w-full h-full"
             :class="{
                 'overflow-hidden' : props.disableScroll,
@@ -25,10 +26,8 @@ const props = defineProps({
     },
 });
 
-const modal = useModal()
 const pageTop = usePageTop()
 const pagebody = ref(null)
-const removed = ref(false)
 
 onBeforeUnmount(() => {
     pageTop.value=true
@@ -41,11 +40,6 @@ const heightStyle = computed(() => {
 onMounted(() => {
     pageTop.value=true
     pagebody.value.addEventListener('scroll', handleScroll);
-
-    // setTimeout(() => {
-    //     console.log('removed!')
-    //     removed.value = true
-    // },2000)
 });
 
 const handleScroll = () => {
