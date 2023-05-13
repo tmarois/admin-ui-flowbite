@@ -6,7 +6,7 @@
             <div class="w-full max-w-screen-2xl">
                 <div class="flex justify-center items-center w-full px-4">
                     <div class="grow">
-                        <div class="flex items-center">
+                        <div v-if="!props.hideTitle" class="flex items-center">
                             <div class="mr-auto text-xl m-0 p-0 flex items-center">
                                 <ul class="flex items-center py-4">
                                     <li v-for="nav in props.breadcrumbs" :key="nav.to">
@@ -20,11 +20,11 @@
                                 <div v-if="slots.badge" class="ml-4"><slot name="badge" /></div>
                             </div>
                         </div>
-                        <div v-if="props.tabs && props.tabs.length>0" class="flex flex-wrap -mb-px">
+                        <div v-if="props.tabs && props.tabs.length>0" class="flex flex-wrap -mb-px" :class="{'pt-2':props.hideTitle}">
                             <div class="grow">
                                 <ul class="flex flex-wrap -mb-px">
                                     <li v-for="tab in props.tabs" :key="tab.to" class="mr-2">
-                                        <NuxtLink :to="tab.to" style="position: relative;bottom: 1px;" class="inline-block py-2 px-4 border-b-4 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">{{ tab.title }}</NuxtLink>
+                                        <NuxtLink :to="tab.to" style="position: relative;bottom: 1px;" class="text-base inline-block py-2 px-4 border-b-4 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">{{ tab.title }}</NuxtLink>
                                     </li>
                                 </ul>
                             </div>
@@ -51,6 +51,7 @@ const props = defineProps({
     breadcrumbs: Object,
     tabs: Array,
     title: String,
+    hideTitle: Boolean
 });
 const pageTop = usePageTop()
 </script>
