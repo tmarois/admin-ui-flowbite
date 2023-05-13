@@ -30,3 +30,21 @@ export const generateUUID = () => {
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
 }
+
+/**
+ * Generate random string
+ * Can be used to generate a password
+ * @returns String (example: "0n8m8fv5r")
+ */
+export const generateRandom = (length, symbols) => {
+    let result           = '';
+    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    if (symbols) {
+        characters += '!@#$%^&*()';
+    }
+    let charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
