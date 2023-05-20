@@ -33,45 +33,6 @@
     </component>
 </template>
 
-<style scoped>
-.loading .btn__content {
-	opacity: 0;
-}
-.btn__loader {
-	display: flex;
-	align-items: center;
-	height: 100%;
-	justify-content: center;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 100%;
-}
-.btn {
-    -webkit-user-select:none;
-    user-select:none;
-    transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-text-decoration-color,-webkit-backdrop-filter;
-    transition-duration:.2s;
-    transition-timing-function:cubic-bezier(.4,0,.2,1);
-    animation:button-pop .25s ease-out;
-}
-@keyframes button-pop{
-    0%{
-        transform:scale(.95)
-    }
-    40%{
-        transform:scale(1.02)
-    }
-    to{
-        transform:scale(1)
-    }
-}
-.btn:active:hover,.btn:active:focus{
-    animation:none;
-    transform:scale(var(--btn-focus-scale,.95))
-}
-</style>
-
 <script setup>
 const isNuxt = typeof $nuxt !== 'undefined' || process.client;
 const slots = useSlots()
@@ -133,13 +94,6 @@ const classes = computed(() => {
         'text-gray-400 !bg-gray-50': props.ghost && !props.outlined && props.disabled,
         'loading': props.loading,
         'rounded-full !p-2': props.circle
-    };
-});
-
-const textClasses = computed(() => {
-    return {
-        'text-blue-600': props.outlined,
-        'text-white': props.outlined,
     };
 });
 
