@@ -10,6 +10,13 @@ export const viewport = (element) => {
 	return outOfViewport;
 }
 
+export const scrollPageTop = () => {
+	let pagebody = document.getElementById('pagebody');
+	if (pagebody) {
+		pagebody.scrollTo({top: 0,behavior: "smooth"});
+	}
+}
+
 // export const viewport = (element) => {
 // 	const elem = document.querySelector(element);
 // 	if (!elem) return undefined;

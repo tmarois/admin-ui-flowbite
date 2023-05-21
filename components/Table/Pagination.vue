@@ -66,7 +66,6 @@
                     :value="props.page"
                     :disabled="(!props.totalCount && props.loading) || (totalPages < 1 && !props.loading)"
                     @focusin="$event.target.select()"
-                    @blur="changePage"
                     @change="changePage"
                     :max="totalPages"
                     classes="text-center"
