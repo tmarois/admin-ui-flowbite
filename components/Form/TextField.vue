@@ -167,7 +167,7 @@ const tag = (props.type==='area') ? 'textarea' : 'input';
 
 const inputType = (props.type==='number') ? 'text' : props.type;
 
-const emit = defineEmits(['keyup','keydown','focusin','focusout','blur', 'cleared','update:modelValue','input']);
+const emit = defineEmits(['keyup','keydown','enter','focusin','focusout','blur', 'cleared','update:modelValue','input']);
 
 const id = uniqueId();
 
@@ -196,6 +196,9 @@ const keyup = (e) => {
     e.target.value = validateValue(e.target.value);
     internalValue.value = (e.target.value);
     emit('keyup', e);
+    if(e.key === 'Enter') {
+        emit('enter',e)
+    }
 };
 
 const keydown = (e) => {
