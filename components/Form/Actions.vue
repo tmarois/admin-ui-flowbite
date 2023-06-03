@@ -73,4 +73,7 @@ if (props.watchState !== null) {
         change(hasObjectChanged(JSON.parse(JSON.stringify(props.watchState?.original)), JSON.parse(JSON.stringify(newValue?.current))))
     }, { deep: true });
 }
+else {
+    changed.value = true
+}
 </script>
