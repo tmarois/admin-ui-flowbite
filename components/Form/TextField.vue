@@ -175,15 +175,32 @@ const inputTag = ref(null)
 
 const validateValue = (value) => {
     if (value === null || value === undefined || value === '') return null;
+    
     if (props.type === 'number') {
         value = value.toString().replace(/\D/g, '');
         value = Number(value)
-        if (props.max && value > props.max) value = props.max;
-        if (props.min && value < props.min) value = props.min;
     }
+    else if (props.type === 'float') {
+        value = value.toString().replace(/[^0-9.-]/g, '');
+        var parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        } else if (parts.length === 2 && value.endsWith('.')) {
+            value = value;
+        } else {
+            value = Number(value);
+        }
+    }
+
     if (typeof props.formatter === 'function') {
         value = props.formatter(value)
     }
+
+    if (props.type === 'float' || props.type === 'number') {
+        if (props.max && value > props.max) value = props.max;
+        if (props.min && value < props.min) value = props.min;
+    }
+
     return value;
 };
 
