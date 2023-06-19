@@ -40,6 +40,7 @@
                         v-model="localsearch"
                         ref="dsearchb"
                         @keyup="searchLocal($event, localsearch)"
+                        @blur="blurSearch"
                         :disabled="props.disabled"
                         @click="menuToggle('input')"
                         type="text"
@@ -280,6 +281,15 @@ const isChecked = (item) => {
     if(selected.value.some((obj) => obj[props.itemValue] === item[props.itemValue])) return true;
     return false;
 };
+
+const blurSearch = (e) => {
+    if (selected.length > 0 || selected[props.itemValue] || selected[props.itemValue] === false) {
+        // do nothing here
+    }
+    else {
+        localsearch.value = null
+    }
+}
 
 const computedOptions = computed(() => {
     if(props.options.length && (!props.options[0][props.itemValue] && props.options[0][props.itemValue] !== false) && !props.grouped) {
