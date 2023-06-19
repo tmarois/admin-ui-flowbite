@@ -451,7 +451,7 @@ const menuToggle = (source) => {
     // and there are no options and we have not searched yet
     // then we dont want to show it until the user actually does a search
     // if (this.textField) return;
-    if (props.searchable && !localsearch.value && !computedOptions.length) return menu.value = false;
+    // if (props.searchable && !localsearch.value && !computedOptions.length) return menu.value = false;
     if (!props.disabled) {
         if (props.searchable && source !== 'arrow') menu.value = true;
         else menu.value = !menu.value;
