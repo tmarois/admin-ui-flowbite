@@ -67,25 +67,32 @@ export const getObjectValue = (obj, path, defaultValue = undefined) => {
  * @returns true if object values have changed or fales if they are the same
  */
 export const hasObjectChanged = (original, updated) => {
-    for (const key in original) {
-        if (!(key in updated)) {
+    if (Array.isArray(original) && Array.isArray(updated)) {
+        if (original.length !== updated.length) {
             return true;
         }
-        if (typeof original[key] === 'object' && typeof updated[key] === 'object') {
-            if (hasObjectChanged(original[key], updated[key])) {
+        return !original.every((val, index) => hasObjectChanged(val, updated[index]));
+    }
+
+    if (typeof original === 'object' && original !== null && typeof updated === 'object' && updated !== null) {
+        for (const key in original) {
+            if (original.hasOwnProperty(key)) {
+                if (!updated.hasOwnProperty(key) || hasObjectChanged(original[key], updated[key])) {
+                    return true;
+                }
+            }
+        }
+        for (const key in updated) {
+            if (updated.hasOwnProperty(key) && !original.hasOwnProperty(key)) {
                 return true;
             }
-        } else if (original[key] !== updated[key]) {
-            return true;
         }
+        return false;
     }
-    for (const key in updated) {
-        if (!(key in original)) {
-            return true;
-        }
-    }
-    return false;
+
+    return original !== updated;
 };
+
 
 /**
  * Extracts all the values from the array of objects

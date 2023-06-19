@@ -26,6 +26,7 @@
 </template>
 
 <script setup>
+import _ from 'lodash';
 const changed = ref(false)
 const emit = defineEmits(['submit','cancel','changed','reset'])
 const props  = defineProps({
@@ -63,15 +64,18 @@ const change = (v) => {
 }
 
 const reset = () => {
-    emit('reset', props.watchState?.original)
+    emit('reset', JSON.parse(JSON.stringify(props.watchState?.original)))
 }
 
 // This is so we can watch to see if our original data gets changed
 // if so, we trigger an emit so that we can handle the change
 if (props.watchState !== null) {
+    // watch(props.watchState, (newValue) => {
+    //     change(hasObjectChanged(JSON.parse(JSON.stringify(props.watchState?.original)), JSON.parse(JSON.stringify(newValue?.current))))
+    // }, { deep: true, immediate: false  });
     watch(props.watchState, (newValue) => {
-        change(hasObjectChanged(JSON.parse(JSON.stringify(props.watchState?.original)), JSON.parse(JSON.stringify(newValue?.current))))
-    }, { deep: true });
+        change(!_.isEqual(JSON.parse(JSON.stringify(props.watchState?.original)), JSON.parse(JSON.stringify(newValue?.current))))
+    }, { deep: true, immediate: false  });
 }
 else {
     changed.value = true
