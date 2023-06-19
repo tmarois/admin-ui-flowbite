@@ -51,8 +51,8 @@
                         :class="{
                             'cursor-pointer': menu === false,
                             'text-gray-500 cursor-not-allowed': props.disabled,
-                            'text-black': !props.disabled,
-                            'placeholder-black': selected.length > 0 || selected[itemValue] || selected[itemValue] === false,
+                            'text-gray-900': !props.disabled,
+                            'placeholder-gray-900': selected.length > 0 || selected[itemValue] || selected[itemValue] === false,
                         }"
                         @keydown="inputFilter"
                     />
