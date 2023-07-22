@@ -1,15 +1,15 @@
 <template>
-	<div class="relative flex items-center">
+	<div :class="_classes.root">
         <div 
-        v-if="props.switch && props.falseLabel"
-			class="pr-3 text-sm" 
+            v-if="props.switch && props.falseLabel"
+            :class="_classes.labelFalseWrapper"
 		>
 			<FormLabel 
 				@click.native="switchState('before')"
+                :disabled="props.disabled"
 				:classes="{
                     'cursor-pointer': true,
-                    '!text-gray-400': isChecked,
-                    '!cursor-not-allowed': isChecked && props.disabled
+                    [_classes.switchFalseLabelColorChecked]: isChecked,
                 }"
 			>
 				{{ props.falseLabel }}
@@ -17,36 +17,44 @@
 		</div>
         <div 
             v-if="!props.switch || (!props.disabled && props.switch)" 
-            class="relative cursor-pointer flex items-center" 
+            :class="_classes.inputWrapper" 
             @click="clickHandler"
         >
             <input 
                 :id="id"
                 :type="props.radio ? 'radio' : 'checkbox'" 
-                :class="props.switch ? 'sr-only' : `h-4 w-4 ${props.disabled ? 'cursor-default' : 'cursor-pointer'} z-10`" 
+                :class="props.switch ? 'sr-only' : {
+                    [_classes.inputCheck]: !props.radio, 
+                    [_classes.inputRadio]: props.radio, 
+                    [_classes.inputDisabled]: props.disabled
+                }" 
                 :checked="isChecked"
                 :value="props.modelValue"
                 :disabled="props.disabled"
                 @change="onChange($event)" 
             />
             <div v-if="props.switch">
-                <div :class="`${props.inset ? 'w-12' : 'w-10'} ${props.inset ? 'h-6' : 'h-4'} ${isChecked ? `bg-blue-600` : 'bg-gray-400'} rounded-full shadow-inner`" id="switch-background" />
-                <div :class="`absolute w-6 h-6 bg-white border-2 ${isChecked ? `border-blue-600 translate-x-full` : 'translate-x-0 border-gray-400'} rounded-full ${props.inset ? 'left-0 top-0' : '-left-1 -top-1'} transition`" id="switch-dot" />
+                <div :class="`${props.inset ? 'w-12' : 'w-10'} ${props.inset ? 'h-6' : 'h-4'} ${isChecked ? _classes.switchColorChecked : _classes.switchColor} rounded-full shadow-inner`" id="switch-background" />
+                <div :class="`absolute w-6 h-6 bg-white border-2 ${isChecked ? `${_classes.switchColorBorderChecked} translate-x-full` : `${_classes.switchColorBorder} translate-x-0`} rounded-full ${props.inset ? 'left-0 top-0' : '-left-1 -top-1'} transition`" />
             </div>
         </div>
         <div v-else class="relative cursor-not-allowed">
-			<div :class="`${props.inset ? 'w-12' : 'w-10'} ${props.inset ? 'h-6' : 'h-4'} ${isChecked ? `bg-blue-200` : 'bg-gray-100'} rounded-full shadow-inner`" />
-			<div :class="`absolute w-6 h-6 bg-white border-2 ${isChecked ? `border-blue-200 translate-x-full` : 'translate-x-0'} rounded-full ${props.inset ? 'left-0 top-0' : '-left-1 -top-1'} transition`" /> 
+			<div :class="`${props.inset ? 'w-12' : 'w-10'} ${props.inset ? 'h-6' : 'h-4'} ${isChecked ? _classes.switchDisabledColorChecked : _classes.switchDisabledColor } rounded-full shadow-inner`" />
+			<div :class="`absolute w-6 h-6 bg-white border-2 ${isChecked ? `${_classes.switchDisabledColorBorderChecked} translate-x-full` : 'translate-x-0'} rounded-full ${props.inset ? 'left-0 top-0' : '-left-1 -top-1'} transition`" /> 
 		</div>
-		<div v-if="props.label" class="pl-3 text-sm" @click.native="switchState('after')">
+		<div 
+            v-if="props.label" 
+            :class="_classes.labelWrapper"
+            @click.native="switchState('after')"
+        >
 			<FormLabel 
                 :id="props.switch ? null : id" 
                 :required="required"
+                :disabled="props.disabled"
                 :classes="{
                     'cursor-pointer': true,
-                    '!text-blue-600': isChecked && props.switch && props.falseLabel,
-                    '!text-gray-400': !isChecked && props.switch && props.falseLabel,
-                    '!cursor-not-allowed': props.disabled
+                    [_classes.switchTrueLabelColorChecked]: isChecked && props.switch && props.falseLabel,
+                    [_classes.switchTrueLabelColor]: !isChecked && props.switch && props.falseLabel,
                 }"
             >{{ props.label }}</FormLabel>
 		</div>
@@ -60,7 +68,6 @@ input:checked + div div {
 </style>
 
 <script setup>
-const slots = useSlots();
 const props = defineProps({
     required: {
         type: Boolean,
@@ -106,6 +113,17 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    variant: {
+        type: String,
+        default: null
+    },
+});
+
+const variantClasses = getVariantClass('FormCheckbox', props.variant)
+const _classes = computed(() => {
+    return {
+        ...variantClasses
+    }
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -151,12 +169,5 @@ const internalValue = computed({
     }
 });
 
-const isChecked = computed(() => valueComparator(props.modelValue || props.value, props.trueValue) ? true : false)
-
-// onMounted(() => {
-//     if (props.value) {
-//         internalValue.value = props.value
-//     }
-// })
-
+const isChecked = computed(() => valueComparator(props.modelValue || props.value, props.trueValue) ? true : false);
 </script> 

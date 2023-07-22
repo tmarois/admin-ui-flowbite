@@ -61,7 +61,7 @@
                 </ElementButton>
             </div>
             <div class="relative flex items-center space-x-2">
-                <FormTextField 
+                <FormInput 
                     type="number"
                     :value="props.page"
                     :disabled="(!props.totalCount && props.loading) || (totalPages < 1 && !props.loading)"

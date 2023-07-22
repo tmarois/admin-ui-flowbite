@@ -17,7 +17,8 @@ import {
     // initModals, 
     initPopovers, 
     initTabs, 
-    initTooltips } from 'flowbite'
+    initTooltips 
+} from 'flowbite'
 
 onMounted(() => {
     initAccordions();
@@ -33,5 +34,5 @@ onMounted(() => {
     initPopovers();
     initTabs();
     initTooltips();
-})
+});
 </script>

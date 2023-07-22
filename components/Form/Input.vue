@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-full">
+    <div :class="classes.root">
         <FormLabel 
             v-if="props.label"
             :id="id"
@@ -7,13 +7,15 @@
             :required="props.required"
             :error="props.errors"
             :tooltip="props.tooltip"
+            :disabled="props.disabled"
+            :variant="variantLabel"
         />
         <div class="flex" :class="{'mt-1': props.label}">
-            <div v-if="slots?.prepend" class="inline-flex items-center px-3 text-sm text-gray-800 bg-gray-100 border border-r-0 border-gray-200 rounded-l-md">
+            <div v-if="slots?.prepend" :class="classes.prepend">
                 <slot name="prepend" />
             </div>
-            <div class="grow relative text-gray-500">
-                <div v-if="slots?.icon" class="pointer-events-none absolute inset-y-0 left-0 p-2 flex items-center">
+            <div :class="classes.inputWrapper">
+                <div v-if="slots?.icon" :class="classes.icon">
                     <slot name="icon" />
                 </div>
                 <component 
@@ -45,15 +47,23 @@
                 />
                 <div 
                     v-if="props.clearable && internalValue && !props.readonly && !props.disabled && props.type!=='area'"
-                    class="cursor-pointer absolute inset-y-0 right-0 p-2 flex items-center"
+                    :class="classes.clearable"
                     @click="clearField"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
+                    <slot name="clearable">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                        </svg>
+                    </slot>
                 </div>
             </div>
         </div>
-        <div v-if="props.characterCounter" class="absolute text-right text-[11px] text-gray-600 right-0.5 -bottom-[18px]">
-            {{ (internalValue && internalValue.length) || 0 }}<span v-if="props.maxlength">/{{ props.maxlength }}</span>
+        <div v-if="props.characterCounter" :class="classes.counter">
+            <slot 
+                name="counter" 
+                :valueLength="(internalValue && internalValue.length) ? internalValue.length : 0" 
+                :maxlength="props.maxlength"
+            >{{ (internalValue && internalValue.length) || 0 }}<span v-if="props.maxlength">/{{ props.maxlength }}</span></slot>
         </div>
     </div>
 </template>
@@ -84,6 +94,10 @@ const props = defineProps({
     type: {
         type: String,
         default: 'text'
+    },
+    decimals: {
+        type: Number,
+        default: null
     },
     readonly: {
         type: Boolean,
@@ -118,10 +132,6 @@ const props = defineProps({
         default: false
     },
     pattern: {
-        type: String,
-        default: null
-    },
-    classes: {
         type: String,
         default: null
     },
@@ -161,6 +171,21 @@ const props = defineProps({
         type: String,
         default: null
     },
+    variant: {
+        type: String,
+        default: null
+    },
+    variantLabel: {
+        type: String,
+        default: null
+    },
+});
+
+const variantClasses = getVariantClass('FormInput', props.variant)
+const classes = computed(() => {
+    return {
+        ...variantClasses
+    }
 });
 
 const tag = (props.type==='area') ? 'textarea' : 'input';
@@ -189,6 +214,10 @@ const validateValue = (value) => {
             value = value;
         } else {
             value = Number(value);
+            if (props.decimals) {
+                var multiplier = Math.pow(10, props.decimals);
+                value = Math.round(value * multiplier) / multiplier;
+            }
         }
     }
 
@@ -230,8 +259,6 @@ const focusin = (e) => {
 };
 
 const focusout = (e) => {
-    // internalValue.value = validateValue(e.target.value);
-    // e.target.value = internalValue.value;
     emit('focusout', e);
 };
 
@@ -248,18 +275,15 @@ const blur = (e) => {
 
 const inputClasses = computed(() => {
     if(!props.customClasses) {
-        let c = [`block w-full rounded text-sm focus:outline-none focus:ring-0 border px-2`];
-        if (tag === 'input') c = c.concat(['py-2'])
-        if (tag === 'textarea') c = c.concat(['py-2'])
+        let c = [classes.value.input];
         if (props.noresize && props.type === 'area') c = c.concat(['resize-none'])
-        if (slots?.prepend) c = c.concat(['rounded-l-none'])
+        if (slots?.prepend) c = c.concat([classes.value.inputPrepend])
         if (slots?.icon) c = c.concat(['pl-9'])
-        if (props.classes) c = c.concat([props.classes])
         if (props.clearable) c = c.concat(['pr-8'])
-        if(props.readonly) c = c.concat(['cursor-default'])
-        if(props.disabled) c = c.concat(['cursor-default bg-gray-100 border-gray-200 focus:border-gray-200'])
-        if(props.errors) c = c.concat(['border-red-500 focus:border-red-500 text-red-500 hover:text-red-800'])
-        if (!props.errors && !props.disabled) c = c.concat([`text-gray-800 border-slate-300 hover:bg-slate-50 bg-slate-50 hover:border-slate-400 focus:border-slate-700 hover:text-slate-900`])
+        if(props.readonly) c = c.concat([classes.value.readonly])
+        if(props.disabled) c = c.concat([classes.value.disabled])
+        if(props.errors) c = c.concat([classes.value.errors])
+        if (!props.errors && !props.disabled) c = c.concat([classes.value.inputTheme])
         return c;
     }
     else return props.customClasses;

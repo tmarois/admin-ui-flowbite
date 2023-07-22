@@ -1,26 +1,36 @@
 <template>
     <div 
-        :id="`${id}`" 
+        :id="props.id" 
         role="tooltip" 
-        class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white bg-gray-900 rounded shadow-sm opacity-0 tooltip transition-opacity duration-300 max-w-[250px]"
+        class="tooltip"
+        :class="[classes.base, classes.theme]"
     >
         <slot />
-        <div class="tooltip-arrow" data-popper-arrow></div>
+        <div v-if="!props.hideArrow" class="tooltip-arrow" data-popper-arrow></div>
     </div>
 </template>
 
 <script setup>
-import { initTooltips } from 'flowbite'
 const props = defineProps({
-   id: {
-      type: String,
-      default: null
-   },
+    id: {
+        type: String,
+        default: null
+    },
+    hideArrow: {
+        type: Boolean,
+        default: false
+    },
+    variant: {
+        type: String,
+        default: null
+    }
 });
 
-onMounted(() => {
-    nextTick(() => {
-        initTooltips()
-    })
+const variantClasses = getVariantClass('ElementTooltip', props.variant)
+const classes = computed(() => {
+    return {
+        ...variantClasses
+    }
 });
+
 </script>

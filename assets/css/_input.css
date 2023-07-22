@@ -1,0 +1,43 @@
+/* .radio {
+    flex-shrink: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-width: 1px;
+    border-color: hsl(215 28% 17%/.2);
+}
+
+.radio:checked, .radio[aria-checked="true"] {
+    background-color: hsl(174 75% 46%/1);
+    animation: radiomark 0.2s ease-in-out;
+    box-shadow: 0 0 0 2px hsl(0 0% 100%) inset, 0 0 0 2px hsl(0 0% 100%) inset;
+}
+
+@keyframes radiomark {
+    0% {
+        box-shadow: 0 0 0 6px hsl(0 0% 100%) inset, 0 0 0 12px hsl(0 0% 100%) inset;
+    }
+    50% {
+        box-shadow: 0 0 0 6px hsl(0 0% 100%) inset, 0 0 0 3px hsl(0 0% 100%) inset;
+    }
+    100% {
+        box-shadow: 0 0 0 6px hsl(0 0% 100%) inset, 0 0 0 4px hsl(0 0% 100%) inset;
+    }
+} */
+
+.check-animation:checked, .check-animation[checked="true"],.check-animation[aria-checked="true"] {
+    animation: checkmark 0.2s ease-in-out;
+}
+
+@keyframes checkmark {
+    0% {
+        background-position-y: 5px;
+    }
+    50% {
+        background-position-y: -2px;
+    }
+    100% {
+        background-position-y: 0;
+    }
+}

@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-full">
+    <div :class="_classes.root">
         <FormLabel 
             v-if="props.label"
             :id="id"
@@ -7,8 +7,11 @@
             :required="props.required"
             :error="props.errors"
             :tooltip="props.tooltip"
+            :disabled="props.disabled"
+            :variant="variantLabel"
+            :variantTooltip="variantTooltip"
         />
-        <div class="relative w-full" :class="{'mt-1': props.label}">
+        <div :class="{'mt-1': props.label, [_classes.selectWrapper] : true}">
             <div ref="root">
                 <button
                     type="button"
@@ -23,18 +26,52 @@
                     <span
                         v-if="(!props.searchable && selected.length === 0) || (props.searchable && props.disabled && !selected)" 
                         :placeholder="props.placeholder" 
-                        class="truncate pl-2 font-medium"
+                        :class="_classes.placeholderText"
                         @click="menuToggle('label')"
                     >{{ props.placeholder }}</span>
                     <span
-                        v-else-if="!props.searchable && selectPlaceholder" 
-                        class="truncate pl-2 font-medium"
+                        v-else-if="!props.searchable && selectPlaceholder && !props.badges" 
                         :class="{
-                            'text-gray-500 cursor-not-allowed': props.disabled,
-                            'text-slate-900': !props.disabled
+                            [_classes.placeholderTextSelected]: true,
+                            [_classes.placeholderTextDisabled]: props.disabled,
                         }"
                         @click="menuToggle('label')"
                     >{{ selectPlaceholder }}</span>
+                    <div
+                        v-else-if="selectPlaceholder && props.badges && selected.length > 0" 
+                        :class="_classes.badgesWrapper"
+                        @click="menuToggle('label')"
+                    >
+                        <div 
+                            v-for="selectedItem in computedSelection" 
+                            :key="selectedItem[props.itemValue]"
+                        >
+                            <ElementBadge 
+                                :variant="props.variantBadge" 
+                                enableRemove 
+                                @remove="selectItem(selectedItem)" 
+                                class="cursor-pointer mb-1 mr-1"
+                            >
+                                {{ selectedItem[props.itemLabel] }}
+                            </ElementBadge>
+                        </div> 
+                        <input
+                            v-if="props.searchable"
+                            v-model="localsearch"
+                            ref="dsearchb"
+                            @keyup="searchLocal($event, localsearch)"
+                            @keydown="handleBackspace"
+                            @blur="blurSearch"
+                            :disabled="props.disabled"
+                            @click="menuToggle('input')"
+                            type="text"
+                            :autocomplete="`new-search-${id}`"
+                            :id="`search-${id}`"
+                            :name="`n[${id}]`"
+                            :class="_classes.inputBadgeSearch"
+                            :placeholder="props.badgePlaceholder"
+                        />
+                    </div>
                     <input
                         v-else
                         v-model="localsearch"
@@ -48,35 +85,44 @@
                         :id="`search-${id}`"
                         :name="`n[${id}]`"
                         :placeholder="selectPlaceholder"
-                        class="w-full bg-transparent font-medium pl-2 text-sm placeholder-gray-500 my-auto truncate border-0 focus:outline-none focus:ring-0"
                         :class="{
+                            [_classes.input] : true,
+                            [_classes.inputDisabled]: props.disabled,
+                            [_classes.inputSelected]: selected.length > 0 || selected[itemValue] || selected[itemValue] === false,
                             'cursor-pointer': menu === false,
-                            'text-gray-500 cursor-not-allowed': props.disabled,
-                            'text-gray-900': !props.disabled,
-                            'placeholder-gray-900': selected.length > 0 || selected[itemValue] || selected[itemValue] === false,
                         }"
                         @keydown="inputFilter"
                     />
                     <span
                         v-if="clearable && (localsearch || selected.length || selected[props.itemValue] || selected[props.itemValue] === false)"
-                        class="cursor-pointer absolute right-6 p-2 flex items-center"
+                        :class="_classes.clearableWrapper"
                         @click="clearField"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
+                        <slot name="clearable">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                            </svg>
+                        </slot>
                     </span>
                     <span 
                         v-if="loading"
-                        class="px-2 h-full flex items-center ml-auto"
+                        :class="_classes.loaderWrapper"
                     >
-                        <ElementLoader size="5" />
+                        <slot name="loader">
+                            <ElementLoader size="5" />
+                        </slot>
                     </span>
                     <span
                         v-else
-                        @click.prevent="menuToggle('arrow')"
-                        class="px-2 h-full flex items-center ml-auto"
+                        @click.stop="menuToggle('arrow')"
+                        :class="_classes.arrowWrapper"
                     >
-                        <svg v-if="menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.832 6.29 12.77a.75.75 0 11-1.08-1.04l4.25-4.5a.75.75 0 011.08 0l4.25 4.5a.75.75 0 01-.02 1.06z" clip-rule="evenodd" /></svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" /></svg>
+                        <svg v-if="menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.832 6.29 12.77a.75.75 0 11-1.08-1.04l4.25-4.5a.75.75 0 011.08 0l4.25 4.5a.75.75 0 01-.02 1.06z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+                        </svg>
                     </span>
                 </button>
             </div>
@@ -86,34 +132,30 @@
                 :style="`${props.maxHeight ? `max-height: ${props.maxHeight}px` : ''}`"
                 :id="`dropdown-${id}`"
             >
-                <li v-if="props.loading && !computedOptions.length" class="flex items-center rounded m-4 font-medium">
-                    Searching...
-                </li>
-                <li 
-                    v-else-if="props.searchable && !searchableOptions.length && !localsearch" 
-                    class="flex items-center justify-between rounded m-4 font-medium"
-                >
-                    {{ props.searchText }}
-                </li>
-                <li v-else-if="!searchableOptions.length" class="flex items-center justify-between rounded p-4 font-medium">
-                    {{ props.nodata }}
-                </li>
+                <li v-if="props.loading && !computedOptions.length" :class="_classes.fetchingText">{{ props.fetchingText }}</li>
+                <li v-else-if="props.searchable && !searchableOptions.length && !localsearch" :class="_classes.searchableText">{{ props.searchText }}</li>
+                <li v-else-if="!searchableOptions.length" :class="_classes.noDataText">{{ props.nodata }}</li>
                 <template v-else-if="computedOptions.length && !props.grouped">
                     <li
                         v-for="(item, i) of searchableOptions"
                         :key="i"
-                        class="relative flex items-center transition duration-150"
                         :class="[
-                            {'text-white bg-slate-600': (!props.multiple && selected[props.itemValue] === item[props.itemValue]) },
+                            {[_classes.dropdownItem]: true},
+                            {[_classes.dropdownItemSelected]: (!props.multiple && selected[props.itemValue] === item[props.itemValue]) },
                             { 'focused': equalsSearch(item[itemValue]) },
-                            item.disabled ? 'text-gray-300' : 'cursor-pointer hover:bg-blue-600 hover:text-white'
+                            item.disabled ? _classes.dropdownItemDisabled : _classes.dropdownItemTheme
                         ]"
-                        @click.stop="item.disabled ? '' : selectItem(item)"
                     >
+                        <div 
+                            class="absolute w-full h-full top-0 right-0 bottom-0 left-0 z-10"
+                            @click.stop.prevent="item.disabled ? '' : selectItem(item, false, $event)"
+                            @mousedown.stop.prevent="preventTextSelection($event)"
+                        ></div>
                         <FormCheckbox
                             v-if="props.multiple"
                             :value="isChecked(item)"
                             :disabled="item.disabled"
+                            @click.self="item.disabled ? '' : selectItem(item, false, $event)"
                             class="ml-2"
                         />
                         <slot name="option" :item="item">
@@ -149,11 +191,19 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    badges: {
+        type: Boolean,
+        default: false
+    },
     label: {
         type: String,
         default: null
     },
     placeholder: {
+        type: String,
+        default: null
+    },
+    badgePlaceholder: {
         type: String,
         default: null
     },
@@ -222,12 +272,40 @@ const props = defineProps({
         type: String,
         default: 'Start typing to search for results'
     },
+    fetchingText: {
+        type: String,
+        default: 'Searching...'
+    },
     tooltip: {
         type: String,
         default: null
     },
+    variant: {
+        type: String,
+        default: null
+    },
+    variantLabel: {
+        type: String,
+        default: null
+    },
+    variantTooltip: {
+        type: String,
+        default: null
+    },
+    variantBadge: {
+        type: String,
+        default: null
+    }
 });
 
+const variantClasses = getVariantClass('FormSelect', props.variant)
+const _classes = computed(() => {
+    return {
+        ...variantClasses
+    }
+});
+
+const dsearchb = ref(null);
 const root = ref(null);
 const id = uniqueId()
 const menu = ref(false)
@@ -246,27 +324,28 @@ const dropdownDirection = computed(() => {
 
 const buttonClasses = computed(() => {
     let c = [
-        'flex justify-start items-center border text-sm font-medium w-full py-2 focus:outline-none'
+        _classes.value.button
     ];
-    if (!props.disabled) c = c.concat(['text-gray-800 border-slate-300 hover:bg-slate-50 bg-slate-50 hover:border-slate-400 focus:border-slate-700 hover:text-slate-900 group']);
-    if (props.disabled) c = c.concat(['bg-gray-100 cursor-not-allowed']);
+    if (!props.disabled) c = c.concat([_classes.value.buttonTheme]);
+    if (props.disabled) c = c.concat([_classes.buttonDisabled]);
     if (!menu.value) c = c.concat(['rounded']);
     if (menu.value) c = c.concat(['rounded-t']);
     return c;
 });
 
 const dropdownClasses = computed(() => {
+
     let c = [
-        `absolute w-full overflow-y-auto text-sm rounded rounded-t-none shadow-lg text-gray-500 bg-white focus:outline-none border border-gray-200 z-10`
+        _classes.value.dropdownBase,
+        _classes.value.dropdownTheme
     ];
+
     if(!props.maxHeight) c = c.concat(['max-h-80']);
-    // if(this.$slots.opener) c = c.concat(['min-w-[200px]']);
+
     if (dropdownDirection === 'top') {
         c = c.concat(['bottom-10']);
     }
-    else {
-        // c = c.concat(['mt-[-1px]']);
-    }
+    
     return c;
 });
 
@@ -290,6 +369,10 @@ const blurSearch = (e) => {
         localsearch.value = null
     }
 }
+
+const computedSelection = computed(() => {
+    return selected.value.sort((a, b) => a[props.itemValue].localeCompare(b[props.itemValue]));
+});
 
 const computedOptions = computed(() => {
     if(props.options.length && (!props.options[0][props.itemValue] && props.options[0][props.itemValue] !== false) && !props.grouped) {
@@ -400,19 +483,39 @@ const equalsSearch = (item) => {
     return searchableOptions?.[cycleIndex.value]?.[props.itemValue] === item;
 }
 
+const handleBackspace = (event) => {
+    if (event.key === 'Backspace' && (localsearch.value === '' || localsearch.value === null)) {
+        selected.value.pop();
+    }
+};
+
 const searchLocal = (event, value) => {
+
     // lets ignore these events since they are not searches
-    if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Enter') return false;
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') return false;
+
+    // if there is one item, select it if clicking enter
+    if (event.key === 'Enter' && searchableOptions.value.length === 1) {
+        selectItem(searchableOptions.value[0],true,event)
+        return false;
+    }
+
     if (localsearch.value && localsearch.value.length) localsearch.value = localsearch.value.replace(/[\<\>//\\]/gi, '')
+
     if (searchableOptions.value.length) menu.value = true;
+
     isSearching.value = true;
     // if (this.groupSelectable) this.showAllGroups();
 };
 
-const selectItem = (item) => {
+const preventTextSelection = (event) => {
+    if (event.shiftKey) {
+        event.preventDefault();
+    }
+}
+
+const selectItem = (item, onlyAdd = false, event) => {
     if (props.loading) return;
-    // remove possible underline from search select
-    item[props.itemLabel] = String(item[props.itemLabel]).replace(/(<([^>]+)>)/ig, '');
 
     if(!props.multiple) {
         selected.value = item;
@@ -426,8 +529,20 @@ const selectItem = (item) => {
         if (!selected.value.some( (obj) => obj[props.itemValue] === item[props.itemValue]) ) {
             selected.value.push(item);
         } else {
-            selected.value = selected.value.filter((obj) => obj[props.itemValue] !== item[props.itemValue])
+            if (onlyAdd === false) {
+                selected.value = selected.value.filter((obj) => obj[props.itemValue] !== item[props.itemValue])
+            }
         }
+    }
+
+    if (event && event.shiftKey) {
+        event.preventDefault();
+    }
+    else {
+        localsearch.value = null
+        menu.value = false
+        // remove possible underline from search select
+        item[props.itemLabel] = String(item[props.itemLabel]).replace(/(<([^>]+)>)/ig, '');
     }
 
     emit('change', returnValue.value); 
@@ -440,11 +555,17 @@ watch(() => searchableOptions, (v) => {
 })
 
 watch(() => menu.value, (v) => {
-    if (v === true) nextTick(() => viewportIni.value = viewport(`#dropdown-${id}`));
+    if (v === true) {
+        nextTick(() => viewportIni.value = viewport(`#dropdown-${id}`));
+        if (dsearchb.value) {
+            dsearchb.value.focus();
+        }
+    }
     else {
         if(props.multiple || props.searchable) cycleIndex.value = -1;
         else cycleIndex.value = selectedIndex.value || -1;
         viewportIni.value = [];
+        localsearch.value = null
     }    
 })
 
@@ -464,7 +585,12 @@ const menuToggle = (source) => {
     // if (props.searchable && !localsearch.value && !computedOptions.length) return menu.value = false;
     if (!props.disabled) {
         if (props.searchable && source !== 'arrow') menu.value = true;
+        // else if (source === 'arrow') menu.value = true;
         else menu.value = !menu.value;
+    }
+
+    if (menu.value === true && dsearchb.value) {
+        dsearchb.value.focus();
     }
 };
 
@@ -491,7 +617,8 @@ const clearField = () => {
 .truncate {
     overflow: hidden;
     text-overflow: ellipsis;
-}.focused {
+}
+.focused {
     scroll-margin: 8px;
 }
 .focused::before {

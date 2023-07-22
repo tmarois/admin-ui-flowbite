@@ -4,7 +4,15 @@
             <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                 <ul class="space-y-2">
                     <li v-for="item in items" :key="item.to">
-                        <NuxtLink :to="item.to" class="flex items-center p-2 text-base font-normal text-gray-900 rounded hover:bg-blue-100">{{ item.title }}</NuxtLink>
+                        <div
+                            v-if="item.header"
+                            class="flex items-center p-2 text-xs font-medium text-gray-500 border-b border-gray-200"
+                        >{{ item.header }}</div>
+                        <NuxtLink 
+                            v-else
+                            :to="item.to" 
+                            class="flex items-center p-2 text-sm font-normal text-gray-900 rounded hover:bg-blue-100"
+                        >{{ item.title }}</NuxtLink>
                     </li>
                 </ul>
             </div>
@@ -24,8 +32,15 @@
 <script setup>
 const items = [
     {
+        header: 'ELEMENTS'
+    },
+    {
         to:'/sandbox/avatars',
         title: 'Avatars'
+    },
+    {
+        to:'/sandbox/badges',
+        title: 'Badges'
     },
     {
         to:'/sandbox/cards',
@@ -40,32 +55,44 @@ const items = [
         title: 'Menus'
     },
     {
-        to:'/sandbox/modals',
-        title: 'Modals'
-    },
-    {
         to:'/sandbox/drawers',
         title: 'Drawers'
     },
     {
+        to:'/sandbox/modals',
+        title: '*Modals'
+    },
+    {
         to:'/sandbox/tabs',
-        title: 'Tabs'
+        title: '*Tabs'
+    },
+
+    {
+        header: 'FORMS'
+    },
+    {
+        to:'/sandbox/forms-label',
+        title: 'Labels'
     },
     {
         to:'/sandbox/forms-textfield',
-        title: 'Forms: Text Field'
+        title: 'Input (Text)'
     },
     {
         to:'/sandbox/forms-textarea',
-        title: 'Forms: Text Area'
+        title: 'Input (Area)'
     },
     {
         to:'/sandbox/forms-checkbox',
-        title: 'Forms: Checkbox'
+        title: 'Checkbox'
     },
     {
         to:'/sandbox/forms-select',
-        title: 'Forms: Select'
+        title: 'Select'
+    },
+
+    {
+        header: 'TABLES'
     },
     {
         to:'/sandbox/tables',
@@ -75,9 +102,21 @@ const items = [
         to:'/sandbox/tables-pagination',
         title: 'Tables: Pagination'
     },
+
+    {
+        header: 'ADMIN APP'
+    },
+    {
+        to:'/sandbox/admin/page-nav-top',
+        title: '*Page Navigation (top)'
+    },
+    {
+        to:'/sandbox/admin/page-nav-side',
+        title: '*Page Navigation (side)'
+    },
     {
         to:'/sandbox/page-tabs/tab-one',
-        title: 'Page: Tabs'
+        title: 'Page Header + Tabs'
     }
 ]
 </script>
